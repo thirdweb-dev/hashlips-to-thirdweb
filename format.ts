@@ -1,35 +1,37 @@
-import data from "./_metadata.json";
+import data from "./metadata.json";
 import { createObjectCsvWriter } from "csv-writer";
 
+const attributes = data[0].attributes.map((attribute: { trait_type: string, value: string; }) => attribute.trait_type);
+
 const formatJson = (json: any) => {
-  return json.map((dolphin: any) => ({
-    name: dolphin.name,
-    description: dolphin.description,
-    dna: dolphin.dna,
-    edition: dolphin.edition,
-    date: dolphin.date,
-    Background: dolphin.attributes[0].value === "None" ? "" : dolphin.attributes[0].value,
-    Flipper: dolphin.attributes[1].value === "None" ? "" : dolphin.attributes[1].value,
-    Color: dolphin.attributes[2].value === "None" ? "" : dolphin.attributes[2].value,
-    Eyes: dolphin.attributes[3].value === "None" ? "" : dolphin.attributes[3].value,
-    Hat: dolphin.attributes[4].value === "None" ? "" : dolphin.attributes[4].value,
-  }));
+  return json.map((nft: any) => {
+
+    const formattedNft = {
+      name: nft.name,
+      description: nft.description,
+      dna: nft.dna,
+      edition: nft.edition,
+      date: nft.date,
+    };
+
+    attributes.map(attribute => {
+      const findAttribute = nft.attributes.find(({ trait_type }: { trait_type: string; }) => trait_type === attribute).value;
+      formattedNft[attribute] = findAttribute.trim() === "None" ? "" : findAttribute;
+    });
+    return formattedNft;
+  });
 };
 
-const dolphins = formatJson(data);
+const metadata = formatJson(data);
 
-createObjectCsvWriter({
-  path: "./dolphins.csv",
-  header: [
-    { id: 'name', title: 'name' },
-    { id: 'description', title: 'description' },
-    { id: 'dna', title: 'dna' },
-    { id: 'edition', title: 'edition' },
-    { id: 'date', title: 'date' },
-    { id: 'Background', title: 'Background' },
-    { id: 'Flipper', title: 'Flipper' },
-    { id: 'Color', title: 'Color' },
-    { id: 'Eyes', title: 'Eyes' },
-    { id: 'Hat', title: 'Hat' },
-  ]
-}).writeRecords(dolphins).then(() => console.log('The CSV file was written successfully'));
+const header = [
+  { id: 'name', title: 'name' },
+  { id: 'description', title: 'description' },
+  { id: 'dna', title: 'dna' },
+  { id: 'edition', title: 'edition' },
+  { id: 'date', title: 'date' },
+];
+
+attributes.map((attribute: string) => header.push({ id: attribute, title: attribute }));
+
+createObjectCsvWriter({ path: "./metadata.csv", header }).writeRecords(metadata).then(() => console.log('The CSV file was written successfully'));
