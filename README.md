@@ -1,4 +1,4 @@
-# Dolphin formatter
+# HashLips Art Engine to thirdweb
 
 CSV formatter, from JSON to CSV, making the CSV ready for thirdweb bulk upload.
 
