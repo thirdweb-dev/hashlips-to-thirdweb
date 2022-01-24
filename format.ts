@@ -1,4 +1,4 @@
-import data from "./metadata.json";
+import data from "./metadata2.json";
 import { createObjectCsvWriter } from "csv-writer";
 
 const attributes = data[0].attributes.map((attribute: { trait_type: string, value: string; }) => attribute.trait_type);
@@ -15,8 +15,9 @@ const formatJson = (json: any) => {
     };
 
     attributes.map(attribute => {
-      const findAttribute = nft.attributes.find(({ trait_type }: { trait_type: string; }) => trait_type === attribute).value;
-      formattedNft[attribute] = findAttribute.trim() === "None" ? "" : findAttribute;
+      const findAttribute = nft.attributes.find(({ trait_type }: { trait_type: string; }) => trait_type === attribute);
+      const value = findAttribute?.value || "";
+      formattedNft[attribute] = value.trim() === "None" ? "" : value;
     });
     return formattedNft;
   });
